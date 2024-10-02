@@ -17,6 +17,10 @@ gradlew.xml
 .idea/.name
 .idea/gradle.xml
 .idea/.gitignore
+.idea/misc.xml
+.idea/uiDesigner.xml
+.idea/vcs.xml
+.idea/material_theme_project_new.xml
 *.iws
 *.iml
 *.ipr

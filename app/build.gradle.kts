@@ -18,7 +18,6 @@ repositories {
 }
 
 dependencies {
-
     implementation ("org.postgresql:postgresql:42.6.0")
     implementation("com.h2database:h2:2.2.224")
     implementation("com.zaxxer:HikariCP:6.0.0")
@@ -26,7 +25,7 @@ dependencies {
     implementation("io.javalin:javalin:6.3.0")
     implementation("io.javalin:javalin-bundle:6.1.3")
     implementation("io.javalin:javalin-rendering:6.1.3")
-    implementation("gg.jte:jte:3.1.9")
+    implementation("gg.jte:jte:3.1.12")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

@@ -1,5 +1,7 @@
 package hexlet.code;
 
+import com.zaxxer.hikari.HikariDataSource;
+import hexlet.code.repository.DatabaseConfig;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +12,10 @@ import java.sql.SQLException;
 @Slf4j
 public class App {
 
+    private static HikariDataSource dataSource;
+
     public static Javalin getApp() {
+        dataSource = DatabaseConfig.getDataSource();
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
@@ -34,5 +39,13 @@ public class App {
     public static void main(String[] args) throws IOException, SQLException {
         var app = getApp();
         app.start(getPort());
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS urls ("
+                    + "id BIGINT AUTO_INCREMENT PRIMARY KEY,"
+                    + "name VARCHAR(255) NOT NULL,"
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                    + ")");
+        }
     }
 }

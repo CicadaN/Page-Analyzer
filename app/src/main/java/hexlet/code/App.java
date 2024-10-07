@@ -37,6 +37,7 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException, SQLException {
+        System.getenv().forEach((key, value) -> log.info(key + ": " + value));
         var app = getApp();
         app.start(getPort());
         try (var connection = dataSource.getConnection();

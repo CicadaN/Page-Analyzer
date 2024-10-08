@@ -18,9 +18,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 @Slf4j
 public class App {
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
+
     public static Javalin getApp() throws IOException, SQLException {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getDatabaseUrl());
@@ -56,9 +62,18 @@ public class App {
     }
 
     private static String getDatabaseUrl() {
-        return System.getenv()
-                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
-
+        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+        if (jdbcUrl.contains("${")) {
+            String host = System.getenv("HOST");
+            String port = System.getenv("DB_PORT");
+            String database = System.getenv("DATABASE");
+            String username = System.getenv("USERNAME");
+            String password = System.getenv("PASSWORD");
+            jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s?user=%s&password=%s",
+                    host, port, database, username, password);
+        }
+        logger.info("Using JDBC URL: {}", jdbcUrl.replaceAll("password=\\w+", "password=<masked>"));
+        return jdbcUrl;
     }
 
     private static int getPort() {

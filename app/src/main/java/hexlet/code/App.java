@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
@@ -17,11 +20,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 @Slf4j
 public class App {
@@ -42,16 +44,26 @@ public class App {
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
-            config.fileRenderer(new JavalinJte());
+            config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
         app.before(ctx -> {
             ctx.contentType("text/html; charset=utf-8");
         });
 
-        app.get("/", ctx -> ctx.result("Hello World"));
+        app.get("/", ctx -> ctx.render("index.jte"));
+
+
         return app;
     }
+
+    private static TemplateEngine createTemplateEngine() {
+        ClassLoader classLoader = App.class.getClassLoader();
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
+        TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
+        return templateEngine;
+    }
+
 
     private static String readResourceFile(String fileName) throws IOException {
         InputStream inputStream = App.class.getClassLoader().getResourceAsStream(fileName);
@@ -62,17 +74,8 @@ public class App {
     }
 
     private static String getDatabaseUrl() {
-        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
-        if (jdbcUrl.contains("${")) {
-            String host = System.getenv("HOST");
-            String port = System.getenv("DB_PORT");
-            String database = System.getenv("DATABASE");
-            String username = System.getenv("USERNAME");
-            String password = System.getenv("PASSWORD");
-            jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s?user=%s&password=%s",
-                    host, port, database, username, password);
-        }
-        logger.info("Using JDBC URL: {}", jdbcUrl.replaceAll("password=\\w+", "password=<masked>"));
+        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+        log.info("jdbcUrl= " + jdbcUrl);
         return jdbcUrl;
     }
 

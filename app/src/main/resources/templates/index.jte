@@ -1,17 +1,13 @@
-@param String content
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Page Analyzer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container">
-    ${content}
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@template.layout.page(
+content = @`
+    <div class="container">
+        <h1 class="mb-4">Welcome to Page Analyzer</h1>
+        <p>Enter a URL to start analyzing web pages:</p>
+        <form action="/urls" method="post" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="url" class="form-control form-control-lg" placeholder="https://example.com" required>
+                <button type="submit" class="btn btn-primary btn-lg">Analyze</button>
+            </div>
+        </form>
+    </div>
+`)

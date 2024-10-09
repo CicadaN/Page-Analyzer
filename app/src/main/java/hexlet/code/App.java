@@ -53,7 +53,6 @@ public class App {
 
         app.get("/", ctx -> ctx.render("index.jte"));
 
-
         return app;
     }
 

@@ -10,7 +10,10 @@ import java.nio.charset.StandardCharsets;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.RootController;
+import hexlet.code.controller.UrlController;
 import hexlet.code.repository.BaseRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +23,12 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Slf4j
 public class App {
-    private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static Javalin getApp() throws IOException, SQLException {
         HikariConfig hikariConfig = new HikariConfig();
@@ -51,7 +52,10 @@ public class App {
             ctx.contentType("text/html; charset=utf-8");
         });
 
-        app.get("/", ctx -> ctx.render("index.jte"));
+        app.get(NamedRoutes.rootPath(), RootController::show);
+        app.get(NamedRoutes.urlsPath(), UrlController::index);
+        app.post(NamedRoutes.urlsPath(), UrlController::create);
+        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
 
         return app;
     }
@@ -59,8 +63,7 @@ public class App {
     private static TemplateEngine createTemplateEngine() {
         ClassLoader classLoader = App.class.getClassLoader();
         ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
-        TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
-        return templateEngine;
+        return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 
 

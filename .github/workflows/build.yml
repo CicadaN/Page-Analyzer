@@ -19,9 +19,9 @@ jobs:
           gradle-version: 8.7
 
       - run: chmod +x app/gradlew
-      - run: ls -la app/build/reports/jacoco/tes
       - run: make -C app lint
       - run: make -C app test
+      - run: ls -la app/build/reports/jacoco/test
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v5.0.0
         env:

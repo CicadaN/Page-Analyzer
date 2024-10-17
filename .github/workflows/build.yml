@@ -17,6 +17,10 @@ jobs:
       - uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 8.7
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - run: make -C app lint
       - run: make -C app test
       - name: Publish code coverage

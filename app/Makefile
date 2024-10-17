@@ -22,7 +22,7 @@ run:
 	./gradlew run
 
 test:
-	.\gradlew test
+	./gradlew test
 
 report:
 	./gradlew jacocoTestReport

@@ -4,12 +4,6 @@ on:
   push:
   pull_request:
 
-name: Java CI
-
-on:
-  push:
-  pull_request:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,7 +19,7 @@ jobs:
           gradle-version: 8.7
 
       - run: chmod +x app/gradlew
-      - run: ls -la app/build/reports/jacoco/test
+      - run: ls -la app/build/reports/jacoco/tes
       - run: make -C app lint
       - run: make -C app test
       - name: Publish code coverage

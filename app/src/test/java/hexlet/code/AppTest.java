@@ -6,7 +6,9 @@ import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -14,16 +16,14 @@ import java.sql.SQLException;
 public class AppTest {
 
     private static Javalin app;
-    private static String baseUrl;
 
     @BeforeEach
-    public void beforeAll() throws IOException, SQLException {
+    public final void beforeEach() throws IOException, SQLException {
         app = App.getApp();
-        baseUrl = "http://localhost:7070";
     }
 
     @AfterEach
-    public void afterAll() {
+    public final void afterEach() {
         if (app != null) {
             app.stop();
         }

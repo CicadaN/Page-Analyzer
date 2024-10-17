@@ -17,13 +17,12 @@ jobs:
       - uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 8.7
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+          arguments: build
+          build-root-directory: app
 
       - run: ls -la app
-      - run: make -C lint
-      - run: make -C test
+      - run: make -C app lint
+      - run: make -C app test
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v5.0.0
         env:

@@ -22,8 +22,11 @@ jobs:
       - run: make -C app lint
       - run: make -C app test
 
-      - name: List build directory
-        run: ls -R app/build
+      - name: Generate JaCoCo report
+        run: cd app && ./gradlew jacocoTestReport
+
+      - name: List JaCoCo report files
+        run: ls -R app/build/reports/jacoco
 
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v5.0.0

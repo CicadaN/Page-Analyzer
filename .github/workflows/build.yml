@@ -21,6 +21,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./app/gradlew
 
+
       - run: make -C app lint
       - run: make -C app test
       - name: Publish code coverage

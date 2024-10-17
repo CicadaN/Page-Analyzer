@@ -63,4 +63,15 @@ public class AppTest {
         });
     }
 
+    @Test
+    public void testSearshUrl() throws SQLException {
+        var url = new Url("http://localhost:7070");
+        UrlRepository.save(url);
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.get("/urls/");
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string()).contains("http://localhost:7070");
+        });
+    }
+
 }

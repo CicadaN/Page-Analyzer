@@ -8,7 +8,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Data
-public class Url {
+public final class Url {
     private int id;
     @NonNull
     private String name;
@@ -16,7 +16,7 @@ public class Url {
 
     public String getFormattedCreatedAt() {
         return DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
-                .withZone(ZoneId.systemDefault())
-                .format(this.createdAt);
+            .withZone(ZoneId.systemDefault())
+            .format(this.createdAt);
     }
 }

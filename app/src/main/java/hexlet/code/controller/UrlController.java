@@ -50,7 +50,7 @@ public class UrlController {
         if (uri.getPort() != -1) {
             name += ":" + uri.getPort(); // только если порт явно указан
         }
-        if (UrlRepository.findByName(name) != null) {
+        if (UrlRepository.findByName(name).isPresent()) {
             ctx.sessionAttribute("flash", "Страница уже существует");
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(NamedRoutes.rootPath());
@@ -72,10 +72,8 @@ public class UrlController {
 
     public static void show(Context ctx) throws SQLException {
         int id = ctx.pathParamAsClass("id", Integer.class).get();
-        Url url = UrlRepository.findById(id);
-        if (url == null) {
-            throw new NotFoundResponse("Url with ID: " + id + " not found");
-        }
+        Url url = UrlRepository.findById(id)
+                .orElseThrow(() -> new NotFoundResponse("Url with ID: " + id + " not found"));
         var urlCheck = UrlCheckRepository.findbyId(id);
         UrlPage page = new UrlPage(url, urlCheck);
         page.setFlash(ctx.sessionAttribute("flash"));
@@ -85,11 +83,8 @@ public class UrlController {
 
     public static void check(Context ctx) throws SQLException {
         int urlId = Integer.parseInt(ctx.pathParam("id"));
-        Url url = UrlRepository.findById(urlId);
-
-        if (url == null) {
-            throw new NotFoundResponse("URL not found");
-        }
+        Url url = UrlRepository.findById(urlId)
+                .orElseThrow(() -> new NotFoundResponse("Url with ID: " + urlId + " not found"));
 
         try {
             HttpResponse<String> response = Unirest.get(url.getName()).asString();
@@ -114,5 +109,4 @@ public class UrlController {
 
         ctx.redirect(NamedRoutes.urlPath(urlId));
     }
-
 }

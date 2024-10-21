@@ -79,12 +79,6 @@ public class App {
         return jdbcUrl;
     }
 
-//    private static String getDatabaseUrl() {
-//        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:file:./data/app");
-//        log.info("jdbcUrl= " + jdbcUrl);
-//        return jdbcUrl;
-//    }
-
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", "7070");
         return Integer.valueOf(port);

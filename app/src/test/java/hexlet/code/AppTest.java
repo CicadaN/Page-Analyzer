@@ -10,13 +10,11 @@ import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -25,23 +23,30 @@ import java.util.stream.Collectors;
 public class AppTest {
 
     private static Javalin app;
-    private static MockWebServer server = new MockWebServer();
+    private static MockWebServer server;
+
+    private static String readResourceFile(String fileName) throws IOException {
+        try (InputStream inputStream = AppTest.class.getClassLoader().getResourceAsStream(fileName)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + fileName);
+            }
+            return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                    .lines().collect(Collectors.joining("\n"));
+        }
+    }
 
     @BeforeAll
     public static void startMock() throws IOException {
         server = new MockWebServer();
         MockResponse response = new MockResponse()
-                .setBody(readResourceFile("fixtures/url_check.html"));
+                .setBody(readResourceFile("MockWebServer.html")).setResponseCode(200);
         server.enqueue(response);
         server.start();
     }
 
-    public static String readResourceFile(String fileName) throws IOException {
-        var inputStream = App.class.getClassLoader().getResourceAsStream(fileName);
-        try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-            return reader.lines().collect(Collectors.joining("\n"));
-        }
+    @AfterAll
+    public static void stopMockServer() throws IOException {
+        server.shutdown();
     }
 
     @BeforeEach
@@ -50,11 +55,10 @@ public class AppTest {
     }
 
     @AfterEach
-    public final void afterEach() throws IOException {
+    public final void afterEach() {
         if (app != null) {
             app.stop();
         }
-        server.shutdown();
     }
 
     @Test
@@ -75,7 +79,7 @@ public class AppTest {
 
     @Test
     public void testJsonPage() throws SQLException {
-        var url = new Url("https://yandex.ru");
+        var url = new Url("https://ya.ru");
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/urls/" + url.getId());
@@ -105,17 +109,17 @@ public class AppTest {
     @Test
     public void testMock() {
         String mockServerUrl = server.url("/").toString();
-        JavalinTest.test(app, (server, client) -> {
 
+        JavalinTest.test(app, (server, client) -> {
             Url url = new Url(mockServerUrl);
             UrlRepository.save(url);
-            client.post(NamedRoutes.urlPath(url.getId()));
 
+            client.post(NamedRoutes.urlCheck(url.getId()));
             var checkUrl = UrlCheckRepository.findbyId(url.getId());
             var title = checkUrl.getFirst().getTitle();
             var h1 = checkUrl.getFirst().getH1();
-            assertThat(title).isEqualTo("Анализатор страниц");
-            assertThat(h1).isEqualTo("Сайт: https://www.example.com");
+            assertThat(title).isEqualTo("MockWebServer");
+            assertThat(h1).isEqualTo("Hello World Server !");
         });
     }
 }

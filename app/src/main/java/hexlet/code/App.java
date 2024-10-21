@@ -54,6 +54,7 @@ public class App {
         app.get(NamedRoutes.urlsPath(), UrlController::index);
         app.post(NamedRoutes.urlsPath(), UrlController::create);
         app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
+        app.post(NamedRoutes.urlCheck("{id}"), UrlController::check);
 
         return app;
     }
@@ -63,7 +64,6 @@ public class App {
         ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
         return TemplateEngine.create(codeResolver, ContentType.Html);
     }
-
 
     private static String readResourceFile(String fileName) throws IOException {
         InputStream inputStream = App.class.getClassLoader().getResourceAsStream(fileName);
@@ -78,6 +78,12 @@ public class App {
         log.info("jdbcUrl= " + jdbcUrl);
         return jdbcUrl;
     }
+
+//    private static String getDatabaseUrl() {
+//        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:file:./data/app");
+//        log.info("jdbcUrl= " + jdbcUrl);
+//        return jdbcUrl;
+//    }
 
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", "7070");

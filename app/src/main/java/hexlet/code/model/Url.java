@@ -10,8 +10,7 @@ import java.time.format.DateTimeFormatter;
 @Data
 public final class Url {
     private int id;
-    @NonNull
-    private String name;
+    @NonNull private String name;
     private Instant createdAt;
 
     public String getFormattedCreatedAt() {

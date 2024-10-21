@@ -23,12 +23,12 @@ public class UrlRepository extends BaseRepository {
             url.setCreatedAt(instant);
             stmt.setTimestamp(2, Timestamp.from(instant));
             int affectedRows = stmt.executeUpdate();
-            System.out.println("Affected rows: " + affectedRows); // Добавьте эту строку
+            System.out.println("Affected rows: " + affectedRows); // logg
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 url.setId(rs.getInt(1));
-                System.out.println("Generated ID: " + url.getId()); // Добавьте эту строку
+                System.out.println("Generated ID: " + url.getId()); // logg
             } else {
                 throw new SQLException("Failed to save url");
             }

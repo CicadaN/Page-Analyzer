@@ -122,8 +122,10 @@ public class AppTest {
             var checkUrl = UrlCheckRepository.findbyId(url.getId());
             var title = checkUrl.getFirst().getTitle();
             var h1 = checkUrl.getFirst().getH1();
+            var description = checkUrl.getFirst().getDescription();
             assertThat(title).isEqualTo("MockWebServer");
             assertThat(h1).isEqualTo("Hello World Server !");
+            assertThat(description).isEqualTo("This is a mock web server");
         });
     }
 }

@@ -1,6 +1,6 @@
 @import hexlet.code.dto.url.UrlsPage
 @import hexlet.code.model.Url
-@import hexlet.code.model.UrlCheck
+@import hexlet.code.util.Utils
 @import hexlet.code.util.NamedRoutes
 @import java.time.format.DateTimeFormatter
 @import static hexlet.code.util.NamedRoutes.urlCheck
@@ -35,7 +35,7 @@ content = @`
                 </td>
                 <td>
                     @if(urlCheck != null)
-                        ${urlCheck.getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))}
+                        ${Utils.getFormattedCreatedAt(urlCheck.getCreatedAt())}
                     @endif
                 </td>
                 <td>

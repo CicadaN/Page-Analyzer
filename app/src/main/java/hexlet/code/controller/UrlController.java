@@ -21,7 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +30,6 @@ public class UrlController {
 
     public static void create(Context ctx) throws SQLException {
         String url = ctx.formParam("url");
-        if (url == null || url.isEmpty()) {
-            ctx.sessionAttribute("flash", "URL не может быть пустым");
-            ctx.sessionAttribute("flashType", "danger");
-            ctx.redirect(NamedRoutes.rootPath());
-            return;
-        }
         URI uri;
         try {
             uri = new URL(url).toURI();
@@ -48,7 +41,7 @@ public class UrlController {
         }
         String name = uri.getScheme() + "://" + uri.getHost();
         if (uri.getPort() != -1) {
-            name += ":" + uri.getPort(); // только если порт явно указан
+            name += ":" + uri.getPort();
         }
         if (UrlRepository.findByName(name).isPresent()) {
             ctx.sessionAttribute("flash", "Страница уже существует");
@@ -97,7 +90,6 @@ public class UrlController {
 
             UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, description);
             urlCheck.setUrlId(urlId);
-            urlCheck.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             UrlCheckRepository.save(urlCheck);
 
             ctx.sessionAttribute("flash", "URL check was successful!");

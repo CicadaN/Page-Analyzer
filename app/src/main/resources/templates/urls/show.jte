@@ -1,7 +1,6 @@
 @import hexlet.code.dto.url.UrlPage
-@import hexlet.code.model.Url
 @import hexlet.code.util.NamedRoutes
-@import java.time.format.DateTimeFormatter
+@import hexlet.code.util.Utils
 
 @param UrlPage urlPage
 
@@ -28,15 +27,15 @@ content = @`
                     </tr>
                     <tr>
                         <td>Date Created</td>
-                        <td>${urlPage.getUrl().getFormattedCreatedAt()}</td>
+                        <td>${Utils.getFormattedCreatedAt(urlPage.getUrl().getCreatedAt())}</td>
                     </tr>
                 </tbody>
             </table>
             <h2>
-                Проверки
+                Check
             </h2>
             <form method="post" action="${NamedRoutes.urlCheck(urlPage.getUrl().getId())}">
-                <button type="submit" class="btn btn-primary">Запустить проверку</button>
+                <button type="submit" class="btn btn-primary">Run the analysis</button>
             </form>
             <table class="table table-bordered table-hover mt-3">
                 <thead>
@@ -66,7 +65,7 @@ content = @`
                             ${checkUrl.getDescription()}
                         </td>
                         <td>
-                            ${checkUrl.getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))}
+                            ${Utils.getFormattedCreatedAt(checkUrl.getCreatedAt())}
                         </td>
                     </tr>
                 @endfor

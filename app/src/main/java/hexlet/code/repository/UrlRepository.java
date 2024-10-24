@@ -23,13 +23,11 @@ public class UrlRepository extends BaseRepository {
             Instant instant = Instant.now();
             url.setCreatedAt(instant);
             stmt.setTimestamp(2, Timestamp.from(instant));
-            int affectedRows = stmt.executeUpdate();
-//            System.out.println("Affected rows: " + affectedRows); // logg
+            stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 url.setId(rs.getInt(1));
-//                System.out.println("Generated ID: " + url.getId()); // logg
             } else {
                 throw new SQLException("Failed to save url");
             }
@@ -38,12 +36,28 @@ public class UrlRepository extends BaseRepository {
 
     public static Optional<Url> findById(int id) throws SQLException {
         String sql = "SELECT * FROM URLS WHERE ID = ?";
-        return findUrl(sql, stmt -> stmt.setInt(1, id));
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapResultSetToUrl(rs));
+            }
+            return Optional.empty();
+        }
     }
 
     public static Optional<Url> findByName(String name) throws SQLException {
         String sql = "SELECT * FROM URLS WHERE NAME = ?";
-        return findUrl(sql, stmt -> stmt.setString(1, name));
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapResultSetToUrl(rs));
+            }
+            return Optional.empty();
+        }
     }
 
     public static List<Url> findAll() throws SQLException {
@@ -54,35 +68,10 @@ public class UrlRepository extends BaseRepository {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                int id = rs.getInt("ID");
-                String name = rs.getString("NAME");
-                Timestamp timestamp = rs.getTimestamp("CREATED_AT");
-                Url url = new Url(name);
-                url.setId(id);
-                url.setCreatedAt(timestamp.toInstant());
-                urls.add(url);
+                urls.add(mapResultSetToUrl(rs));
             }
         }
-        System.out.println("Fetched URLs: " + urls.size()); // Проверка количества полученных URL
         return urls;
-    }
-
-    @FunctionalInterface
-    private interface SqlConsumer<T> {
-        void accept(T t) throws SQLException;
-    }
-
-    public static Optional<Url> findUrl(String sql, SqlConsumer<PreparedStatement>  pss) throws SQLException {
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            pss.accept(stmt);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Url url = mapResultSetToUrl(rs);
-                return Optional.of(url);
-            }
-        }
-        return Optional.empty();
     }
 
     private static Url mapResultSetToUrl(ResultSet rs) throws SQLException {
@@ -94,5 +83,4 @@ public class UrlRepository extends BaseRepository {
         url.setCreatedAt(timestamp.toInstant());
         return url;
     }
-
 }

@@ -66,7 +66,6 @@ public class UrlRepository extends BaseRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
             while (rs.next()) {
                 urls.add(mapResultSetToUrl(rs));
             }
